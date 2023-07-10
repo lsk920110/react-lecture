@@ -1,16 +1,21 @@
 import {Container,Nav,Navbar,Row,Col, Card} from 'react-bootstrap';
 import './App.css';
-import { useState } from 'react';
+import { createContext, useState } from 'react';
 import data from './data.js';
 import {Routes,Route,Link,useNavigate,Outlet} from 'react-router-dom';
 import Detail from './routes/Detail.js';
+import axios from 'axios';
+import Cart from './routes/Cart';
+
+export let Context1 = createContext();
 
 
 function App() {
 
 
-  let [shoes] = useState(data)
+  let [shoes,setShoes] = useState(data)
   let navigate = useNavigate();
+  let [재고] = useState([10,11,12]);
 
   return (
     <div className="App">
@@ -38,6 +43,15 @@ function App() {
                  })}
                </div>
             </div>
+            <button onClick={()=>{
+              axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{
+                console.log(data.data);
+                let copy = [...shoes,...data.data];
+                // copy.push(...data.data);
+                // console.log(copy)
+                setShoes(copy);
+              })
+            }}>버튼</button>
             {/* <div className="main-bg">
               <div class="container">
               <Container>
@@ -51,7 +65,8 @@ function App() {
           </div> */}
            </>
         } />
-        <Route path='/detail' element={<Detail />} />
+        <Route path='/detail/:id' element={<Detail shoes={shoes}/>}/>
+        <Route path="/cart" element={<Cart/>}/>
         <Route path='/about' element={<About />}>
           <Route path='member' element={<div>멤버임</div>} />
           <Route path='location' element={<div>위치임</div>} />
